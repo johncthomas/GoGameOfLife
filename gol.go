@@ -11,7 +11,7 @@ import (
 
 
 type grid struct {
-	// slice of size x with pointers to slices of size y
+	// cells is the grid where the states will be kept
 	cells 	[][]int
 	xdim	int
 	ydim	int
@@ -36,31 +36,6 @@ func (g *grid) print() {
 }
 
 
-// return values giving occupancy of adjacent cells
-// [4]{left, right, down, up}
-/*
-func (g *grid) occupancy(x, y int) [4]int {
-	offsetter := [2]int{-1, 1}
-	occupied := [4]int{0,0,0,0}
-	occ_i := -1
-	for _, xoff := range offsetter {	
-		occ_i++
-		nux := x + xoff
-		if (nux >= 0) && (nux < g.xdim) {
-			occupied[occ_i] = *g.xy(nux, y)
-		}
-	}
-	for _, yoff := range offsetter {	
-		occ_i++
-		nuy := y + yoff
-		if (nuy >= 0) && (nuy < g.ydim) {
-			occupied[occ_i] = *g.xy(x, nuy)
-		}
-	}
-	return occupied
-}
-*/
-
 // return the number of occupied neighbouring cells to x,  y
 func (g *grid) neighbours(x, y int) int {
 	offsetter := [3]int{-1, 0, 1}
@@ -79,7 +54,7 @@ func (g *grid) neighbours(x, y int) int {
 	return neighbours
 }
 
-func newGrid(xdim, ydim int) *grid {
+func emptyGrid(xdim, ydim int) *grid {
 	// calling this xs as ys don't really exist yet
 	xs := new(grid)
 	xs.xdim = xdim
@@ -95,7 +70,7 @@ func newGrid(xdim, ydim int) *grid {
 
 func step(g grid) *grid {
 	// new grid with updated cells, the returned (pointer) value
-	nug := newGrid(g.xdim, g.ydim)
+	nug := emptyGrid(g.xdim, g.ydim)
 	// go through the cells and apply the rules of Conway's game of life
 	for xi := 0; xi < g.xdim; xi++ {
 		for yi := 0; yi < g.ydim; yi++ {
@@ -149,7 +124,7 @@ func readInGrid(fn string ) *grid {
 		}
 		xs = append(xs, ys)
 	} // finished creating the sliceoslices
-	g := newGrid(coli, rowi)
+	g := emptyGrid(coli, rowi)
 	g.cells = xs
 	return g
 }
